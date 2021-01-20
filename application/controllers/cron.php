@@ -84,9 +84,7 @@ class Cron extends CI_Controller {
             //$last_row_id++;
         }
        
-        $query = "SELECT * FROM mobile_activity_log WHERE id >= $last_row_id";
-        $query .= " and CAST(created_datetime AS DATE)"
-        $query .= "< '$datetime' and error IS NULL limit $limit";
+        $query = "SELECT * FROM mobile_activity_log WHERE id >= $last_row_id and CAST(created_datetime AS DATE) < '$datetime' and error IS NULL limit $limit";
     //exit;
 
         
@@ -98,16 +96,13 @@ class Cron extends CI_Controller {
             if($range_row){
                 $last_rec_index = $results[count($results) - 1];
                 $this->db->where('id', $range_row->id);
-                $this->db->update('cron', array('log_id'=>$last_rec_index['id'] ,
-                                  'run_datetime' => $run_datetime)
-                                  );
+                $this->db->update('cron', array('log_id'=>$last_rec_index['id'] , 'run_datetime' => $run_datetime));
             }
 
         }else{
 
-            $mysql_string = "SELECT min(id) as minid FROM";
-            $mysql_string .= " mobile_activity_log where error IS NULL";
-            $min_log = mysql_query(mysql_string);
+
+            $min_log = mysql_query( "SELECT min(id) as minid FROM mobile_activity_log where error IS NULL");
             $min_log_row = mysql_fetch_object($min_log);
             $last_row_id = 0;
             if($min_log_row){
@@ -115,9 +110,7 @@ class Cron extends CI_Controller {
                 //$run_datetime = date('Y-m-d H:i:s');
                 if($range_row){
                     $this->db->where('id', $range_row->id);
-                    $this->db->update('cron', array('log_id'=>$last_row_id ,
-                                      'run_datetime' => $run_datetime)
-                                      );
+                    $this->db->update('cron', array('log_id'=>$last_row_id , 'run_datetime' => $run_datetime));
                 }
             }
             exit;
@@ -182,10 +175,7 @@ class Cron extends CI_Controller {
                         $captions_images[$key] = $v;
                     } else if ($key == 'caption_sequence') {
                         $caption_sequence = urldecode($v);
-                    } elseif ($key == 'form_id' || $key == 'row_key' ||
-                              $key == 'security_key' || $key == "dateTime" ||
-                              $key == "landing_page" || $key == "is_take_picture" ||
-                              $key == 'form_icon_name') {
+                    } elseif ($key == 'form_id' || $key == 'row_key' || $key == 'security_key' || $key == "dateTime" || $key == "landing_page" || $key == "is_take_picture" || $key == 'form_icon_name') {
                         
                     } else {
 
@@ -193,9 +183,7 @@ class Cron extends CI_Controller {
                             $vdcode = urldecode(base64_decode($v));
                         }
                         else if(strpos($v, $form_info['security_key']) !== FALSE){
-                            $vdcode = urldecode(base64_decode(str_replace($form_info['security_key'],
-                                '', $v))
-                                );
+                            $vdcode = urldecode(base64_decode(str_replace($form_info['security_key'], '', $v)));
                         }
                         else {
                             $vdcode = urldecode($v);
@@ -212,28 +200,18 @@ class Cron extends CI_Controller {
 
                 $warning_message = '';
                 $app_map_view_setting = get_map_view_settings($app_id);
-
-                //if Distance maping on then call this block
-                if(isset($app_map_view_setting->map_distance_mapping) && 
-                    $app_map_view_setting->map_distance_mapping)
+                if(isset($app_map_view_setting->map_distance_mapping) && $app_map_view_setting->map_distance_mapping)//if Distance maping on then call this block
                 {
                     $saved_distance=500;
-                    //if distance not given then default distance will assign as 500
-                    if($app_map_view_setting->distance !== ''){
+                    if($app_map_view_setting->distance !== ''){//if distance not given then default distance will assign as 500
                         $saved_distance=$app_map_view_setting->distance;
                     }
-                    //this field name getting from setting and getting value from received json
-                    $matching_value = $record[$app_map_view_setting->matching_field]; 
-                    $kml_poligon_rec = $this->db->get_where('kml_poligon',
-                        array('app_id' => $app_id, 'type' => 'distence',
-                        'matching_value' => $matching_value))->row_array();
+                    $matching_value = $record[$app_map_view_setting->matching_field]; //this field name getting from setting and getting value from received json
+                    $kml_poligon_rec = $this->db->get_where('kml_poligon', array('app_id' => $app_id, 'type' => 'distence','matching_value' => $matching_value))->row_array();
                     
                     if(!empty($kml_poligon_rec)){
                         $lat_long = explode(',', $location);//Received location from mobile device
-                        $distance_from_center = lan_lng_distance($kml_poligon_rec['latitude'],
-                            $kml_poligon_rec['longitude'],$lat_long[0],
-                            $lat_long[1]
-                            );
+                        $distance_from_center = lan_lng_distance($kml_poligon_rec['latitude'], $kml_poligon_rec['longitude'],$lat_long[0], $lat_long[1]);
                         if($distance_from_center > $saved_distance)
                         {
                             $warning_message  = 'Your location mismatched. ';
@@ -314,9 +292,7 @@ class Cron extends CI_Controller {
                             $fields_count = $this->db->list_fields('zform_' . $form_id);
                             $fields_count = array_map('strtolower', $fields_count);
                             if(count($fields_count) < 90){
-                                $field = array($element => array('type' => 'VARCHAR',
-                                'constraint' => 200, 'NULL' => TRUE)
-                                );
+                                $field = array($element => array('type' => 'VARCHAR', 'constraint' => 200, 'NULL' => TRUE));
                                 $this->dbforge->add_column('zform_' . $form_id, $field, $after_field);
                             }else
                             {
@@ -356,9 +332,7 @@ class Cron extends CI_Controller {
                             $this->form_results_model->remove_mobile_activity($r_value['id']);
                             continue;
                         }
-                        $this->form_results_model->update_mobile_activity($r_value['id'],
-                            array('error'=>$err_msg)
-                            ); 
+                        $this->form_results_model->update_mobile_activity($r_value['id'],array('error'=>$err_msg)); 
                         continue;
                     }
                     else{

@@ -188,33 +188,33 @@ exit;*/
             exit;
         }
         //exit;
-        $new_distance_geo=0;
-        $last_distance_geo=0; 
-        $new_distance=0;
-        $last_distance=0;  
+        $newDistanceGeo=0;
+        $lastDistanceGeo=0; 
+        $newDistance=0;
+        $lastDistance=0;  
         foreach($result as $r)  
         {   
           //print_r($r);
           $distance=(float)$r['distance'];   
-          $d=$distance-$last_distance;   
+          $d=$distance-$lastDistance;   
           if($d>0)   {
-            $new_distance+=$distance-$last_distance;   
+            $newDistance+=$distance-$lastDistance;   
           }
-          $last_distance=$distance;    
+          $lastDistance=$distance;    
 
           //print_r($r);
           $distanceGeo=(float)$r['distanceGeo'];   
-          $dGeo=$distanceGeo-$last_distance_geo;   
+          $dGeo=$distanceGeo-$lastDistanceGeo;   
           if($dGeo>0)   {
-            $new_distance_geo+=$distanceGeo-$last_distance_geo;   
+            $newDistanceGeo+=$distanceGeo-$lastDistanceGeo;   
           }
-          $last_distance_geo=$distanceGeo;     
+          $lastDistanceGeo=$distanceGeo;     
         }
        
         $gps_time = $params ['gpsTime'];
         $records = $tracking_records;
-        $distanceCovered = $new_distance;
-        $distanceCoveredGeo = $new_distance_geo;
+        $distanceCovered = $newDistance;
+        $distanceCoveredGeo = $newDistanceGeo;
 
         
         $gps_time = date('Y-m-d H:i:s', strtotime($gps_time));
@@ -223,7 +223,7 @@ exit;*/
             'route_id' => $route_id,
             'imei_no' => $imei_no,
             'gps_datetime' => $gps_time,
-            'distanceCovered' => round($new_distance,2),
+            'distanceCovered' => round($newDistance,2),
             'distanceCoveredGeo' => round($distanceCoveredGeo,2),
             'records' => $records,
             'created_datetime' => $created_datetime
@@ -319,35 +319,35 @@ exit;*/
         $result=$tracking_result[0]['records'];
         $result=json_decode($result,true);
         //exit;
-        $new_distance_geo=0;
-        $last_distance_geo=0; 
-        $new_distance=0;
-        $last_distance=0;  
+        $newDistanceGeo=0;
+        $lastDistanceGeo=0; 
+        $newDistance=0;
+        $lastDistance=0;  
         foreach($result as $r)  
         {   
           //print_r($r);
           $distance=(float)$r['distance'];   
-          $d=$distance-$last_distance;   
+          $d=$distance-$lastDistance;   
           if($d>0)   {
-            $new_distance+=$distance-$last_distance;   
+            $newDistance+=$distance-$lastDistance;   
           }
-          echo $r['gpsTime']." =>> ".$new_distance." = ".$distance." - ".$last_distance."<br />";
-          echo $r['id']." -> ".$r['gpsTime']." : D:".$distance." LD:".$last_distance." ND:".$new_distance."<br />";
-          $last_distance=$distance;    
+          echo $r['gpsTime']." =>> ".$newDistance." = ".$distance." - ".$lastDistance."<br />";
+          echo $r['id']." -> ".$r['gpsTime']." : D:".$distance." LD:".$lastDistance." ND:".$newDistance."<br />";
+          $lastDistance=$distance;    
 
           //print_r($r);
           $distanceGeo=(float)$r['distanceGeo'];   
-          $dGeo=$distanceGeo-$last_distance_geo;   
+          $dGeo=$distanceGeo-$lastDistanceGeo;   
           if($dGeo>0)   {
-            $new_distance_geo+=$distanceGeo-$last_distance_geo;   
+            $newDistanceGeo+=$distanceGeo-$lastDistanceGeo;   
           }
-          $last_distance_geo=$distanceGeo;     
+          $lastDistanceGeo=$distanceGeo;     
         }
        
         // $gps_time = $params ['gpsTime'];
         // $records = $tracking_records;
-        $distanceCovered = $new_distance;
-        $distanceCoveredGeo = $new_distance_geo;
+        $distanceCovered = $newDistance;
+        $distanceCoveredGeo = $newDistanceGeo;
 
         
         // $gps_time = date('Y-m-d H:i:s', strtotime($gps_time));
@@ -356,7 +356,7 @@ exit;*/
         //     'route_id' => $route_id,
         //     'imei_no' => $imei_no,
         //     'gps_datetime' => $gps_time,
-        //     'distanceCovered' => round($new_distance,2),
+        //     'distanceCovered' => round($newDistance,2),
         //     'distanceCoveredGeo' => round($distanceCoveredGeo,2),
         //     'created_datetime' => $created_datetime
         // );
